@@ -208,10 +208,10 @@ namespace OpenMS
     bool isTargeted() const;
 
     /// get the decoy flag of this
-    int getDecoyFlag() const;
+    decoyFlag getDecoyFlag() const;
 
     /// for this PeakGroup, specify the decoy flag.
-    void setDecoyFlag(int index);
+    void setDecoyFlag(const decoyFlag flag);
 
     /// get calculated qvalue
     float getQvalue(PeakGroup::decoyFlag flag = PeakGroup::decoyFlag::target) const;
@@ -226,10 +226,10 @@ namespace OpenMS
     double getIsotopeDaDistance() const;
 
     /// set index of this peak group
-    void setIndex(const int i);
+    void setIndex(const uint i);
 
     /// get index of this peak group
-    int getIndex() const;
+    uint getIndex() const;
 
     /**
      * @brief calculate the matrices for DL training and scoring
@@ -304,7 +304,7 @@ namespace OpenMS
     /// charge range
     int min_abs_charge_ = 0, max_abs_charge_ = -1;
     /// peak group index
-    int index_ = 0;
+    uint index_ = 0;
     /// scan number
     int scan_number_;
     /// is positive or not
@@ -315,7 +315,7 @@ namespace OpenMS
     double monoisotopic_mass_ = -1.0;
     double intensity_;// total intensity
     /// index to specify if this peak_group is a target (0), an isotope decoy (1), a noise (2), or a charge decoy (3)
-    int decoy_index_ = 0;
+    PeakGroup::decoyFlag decoy_index_ = PeakGroup::decoyFlag::target;
 
     /// distance between consecutive isotopes. Can be different for decoys
     double iso_da_distance_ = Constants::ISOTOPE_MASSDIFF_55K_U;

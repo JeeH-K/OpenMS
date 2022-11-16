@@ -44,7 +44,7 @@ namespace OpenMS
   void FLASHDeconvSpectrumFile::writeDeconvolvedMasses(DeconvolvedSpectrum& dspec, std::fstream& fs, const String& file_name, const FLASHDeconvHelperStructs::PrecalculatedAveragine& avg,
                                                       const bool write_detail, const bool decoy)
   {
-    static std::vector<int> indices{};
+    static std::vector<uint> indices{};
 
     if (dspec.empty())
     {
@@ -55,7 +55,7 @@ namespace OpenMS
     {
       indices.push_back(1);
     }
-    int& index = indices[dspec.getOriginalSpectrum().getMSLevel()-1];
+    uint& index = indices[dspec.getOriginalSpectrum().getMSLevel()-1];
 
     for (auto& pg : dspec)
     {
@@ -210,7 +210,7 @@ namespace OpenMS
         fs << "\t";
 
         auto iso_intensities = pg.getIsotopeIntensities();
-        for (int i = 0; i < iso_intensities.size(); i++)
+        for (size_t i = 0; i < iso_intensities.size(); i++)
         {
           fs << iso_intensities[i];
           if (i < iso_intensities.size() - 1)
@@ -269,7 +269,7 @@ namespace OpenMS
       for(auto& pg: dspec)
       {
         int cl = pg.getDecoyFlag();
-        if(cl<0 || cl>=grouped.size())
+        if(cl >= grouped.size())
         {
           continue;
         }

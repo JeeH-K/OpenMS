@@ -707,14 +707,14 @@ namespace OpenMS
     return is_positive_;
   }
 
-  int PeakGroup::getDecoyFlag() const
+  PeakGroup::decoyFlag PeakGroup::getDecoyFlag() const
   {
     return decoy_index_;
   }
 
-  void PeakGroup::setDecoyFlag(int index)
+  void PeakGroup::setDecoyFlag(const PeakGroup::decoyFlag flag)
   {
-    decoy_index_ = index;
+    decoy_index_ = flag;
   }
 
   void PeakGroup::setIsotopeDaDistance(const double d)
@@ -727,12 +727,12 @@ namespace OpenMS
     return iso_da_distance_;
   }
 
-  void PeakGroup::setIndex(const int i)
+  void PeakGroup::setIndex(const uint i)
   {
     index_ = i;
   }
 
-  int PeakGroup::getIndex() const
+  uint PeakGroup::getIndex() const
   {
     return index_;
   }
