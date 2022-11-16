@@ -100,6 +100,21 @@ namespace OpenMS
                              CoarseIsotopePatternGenerator *generator,
                              const bool use_RNA_averagine);
 
+      /// copy constructor
+      PrecalculatedAveragine(const PrecalculatedAveragine& ) = default;
+
+      /// move constructor
+      PrecalculatedAveragine(PrecalculatedAveragine&& other) noexcept = default;
+
+      /// copy assignment operator
+      PrecalculatedAveragine& operator=(const PrecalculatedAveragine& pc) = default;
+
+      /// move assignment operator
+      PrecalculatedAveragine& operator=(PrecalculatedAveragine&& pc) noexcept = default;
+
+      /// destructor
+      ~PrecalculatedAveragine() = default ;
+
       /// get distribution for input mass. If input mass exceeds the maximum mass (specified in constructor), output for the maximum mass
       IsotopeDistribution get(const double mass) const;
 
