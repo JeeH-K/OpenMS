@@ -170,6 +170,11 @@ namespace OpenMS
     precursor_peak_ = precursor;
   }
 
+  void DeconvolvedSpectrum::setOriginalSpectrum(const MSSpectrum& spec)
+  {
+    spec_ = spec;
+  }
+
   void DeconvolvedSpectrum::setPrecursorIntensity(const double i)
   {
     precursor_peak_.setIntensity(i);
