@@ -71,10 +71,13 @@ namespace OpenMS
     FLASHDeconvAlgorithm(const FLASHDeconvAlgorithm& ) = default;
 
     /// move constructor
-    FLASHDeconvAlgorithm(FLASHDeconvAlgorithm&& other) = default;
+    FLASHDeconvAlgorithm(FLASHDeconvAlgorithm&& other) noexcept = default;
 
     /// assignment operator
     FLASHDeconvAlgorithm& operator=(const FLASHDeconvAlgorithm& fd) = default;
+
+    /// move assignment operator
+    FLASHDeconvAlgorithm& operator=(FLASHDeconvAlgorithm&& fd) noexcept = default;
 
     /**
       @brief main deconvolution function that generates the deconvolved target and decoy spectrum based on the original spectrum.
