@@ -80,7 +80,7 @@ namespace OpenMS
     FLASHDeconvAlgorithm& operator=(FLASHDeconvAlgorithm&& fd) noexcept = default;
 
     /// destructor
-    ~FLASHDeconvAlgorithm() = default; 
+    ~FLASHDeconvAlgorithm() = default;
 
     /**
       @brief main deconvolution function that generates the deconvolved target and decoy spectrum based on the original spectrum.

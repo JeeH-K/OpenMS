@@ -235,7 +235,7 @@ namespace OpenMS
     {
       String prefix = "Set" + std::to_string(i+1) + "_";
       auto dlm = pg.getDLMatrix(i).asVector();
-      for(int j = 0; j < dlm.size(); ++j)
+      for(size_t j = 0; j < dlm.size(); ++j)
       {
         fs << prefix << j << ",";
       }
@@ -260,7 +260,7 @@ namespace OpenMS
   void FLASHDeconvSpectrumFile::writeDLMatrix(std::vector<DeconvolvedSpectrum>& dspecs, std::fstream& fs)
   {
     String cns[] = {"T", "D1", "D2", "D3"};
-    int count = 25000;
+    size_t count = 25000;
     //class,ID,group,data
     std::vector<std::vector<PeakGroup>> grouped(4);
 
@@ -268,11 +268,7 @@ namespace OpenMS
     {
       for(auto& pg: dspec)
       {
-        int cl = pg.getDecoyFlag();
-        if(cl >= grouped.size())
-        {
-          continue;
-        }
+        PeakGroup::decoyFlag cl = pg.getDecoyFlag();
         grouped[cl].push_back(pg);
       }
     }

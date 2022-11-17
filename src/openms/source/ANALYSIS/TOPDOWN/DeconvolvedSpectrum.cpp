@@ -326,7 +326,7 @@ namespace OpenMS
 
       auto& map_charge = qscore_charge_decoy_map[ms_level];
       float tmp_q_charge = 1;
-      for (int i = 0; i < tscore.size(); i++)
+      for (size_t i = 0; i < tscore.size(); i++)
       {
         float ts = tscore[i];
         int dindex = dscore_charge.size() == 0 ? 0 : std::distance(std::lower_bound(dscore_charge.begin(), dscore_charge.end(), ts), dscore_charge.end());
@@ -338,7 +338,7 @@ namespace OpenMS
 
       auto& map_iso = qscore_iso_decoy_map[ms_level];
       float tmp_q_iso = 1;
-      for (int i = 0; i < tscore.size(); i++)
+      for (size_t i = 0; i < tscore.size(); i++)
       {
         float ts = tscore[i];
         int dindex = dscore_iso.size() == 0 ? 0 :  std::distance(std::lower_bound(dscore_iso.begin(), dscore_iso.end(), ts), dscore_iso.end());
