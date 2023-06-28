@@ -32,7 +32,7 @@
 // $Authors: Kyowon Jeong, Jihyung Kim $
 // --------------------------------------------------------------------------
 
-#include <OpenMS/ANALYSIS/TOPDOWN/FLASHDeconvAlgorithm.h>
+#include <OpenMS/ANALYSIS/TOPDOWN/SpectralDeconvolution.h>
 #include <OpenMS/ANALYSIS/TOPDOWN/PeakGroup.h>
 #include <OpenMS/ANALYSIS/TOPDOWN/Qscore.h>
 
@@ -135,7 +135,7 @@ namespace OpenMS
         max_isotope_index = max_isotope_index < peak.isotopeIndex ? peak.isotopeIndex : max_isotope_index;
       }
 
-      float cos_score = FLASHDeconvAlgorithm::getCosine(current_per_isotope_intensities, min_isotope_index, max_isotope_index + 1, iso_dist, iso_size, 0, 0);
+      float cos_score = SpectralDeconvolution::getCosine(current_per_isotope_intensities, min_isotope_index, max_isotope_index + 1, iso_dist, iso_size, 0, 0);
       setChargeIsotopeCosine(abs_charge, cos_score); //
     }
   }
@@ -165,7 +165,7 @@ namespace OpenMS
 
     int h_offset;
     isotope_cosine_score_ =
-      FLASHDeconvAlgorithm::getIsotopeCosineAndDetermineIsotopeIndex(monoisotopic_mass_, per_isotope_int_, h_offset, avg, -min_negative_isotope_index_, -1, allowed_iso_error, target_dummy_type_);
+      SpectralDeconvolution::getIsotopeCosineAndDetermineIsotopeIndex(monoisotopic_mass_, per_isotope_int_, h_offset, avg, -min_negative_isotope_index_, -1, allowed_iso_error, target_dummy_type_);
 
     if (isotope_cosine_score_ < min_cos)
     {

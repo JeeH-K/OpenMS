@@ -49,7 +49,7 @@ namespace OpenMS
    * averagine model should be quickly calculated. To do so, precalculate averagines for different masses at the beginning of FLASHDeconv runs
    * ii) TopPicItem - represent TopPic identification. Currently used for Qscore training. TopPic is the top-down proteomics identification tool (https://www.toppic.org/).
    * iii) LogMzPeak - Log transformed peak from original peak. Contains information such as charge, isotope index, and uncharged mass.
-   * @see FLASHDeconvAlgorithm
+   * @see SpectralDeconvolution
    * @reference: FeatureFinderAlgorithmPickedHelperStructs
    */
 

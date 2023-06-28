@@ -36,28 +36,28 @@
 #include <OpenMS/test_config.h>
 
 ///////////////////////////
-#include <OpenMS/ANALYSIS/TOPDOWN/FLASHDeconvAlgorithm.h>
+#include <OpenMS/ANALYSIS/TOPDOWN/SpectralDeconvolution.h>
 #include <OpenMS/FORMAT/MzMLFile.h>
 ///////////////////////////
 
 using namespace OpenMS;
 using namespace std;
 
-START_TEST(FLASHDeconvAlgorithm, "$Id$")
+START_TEST(SpectralDeconvolution, "$Id$")
 
 /////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////
 
-FLASHDeconvAlgorithm* ptr = 0;
-FLASHDeconvAlgorithm* null_ptr = 0;
-START_SECTION(FLASHDeconvAlgorithm())
+SpectralDeconvolution* ptr = 0;
+SpectralDeconvolution* null_ptr = 0;
+START_SECTION(SpectralDeconvolution())
 {
-  ptr = new FLASHDeconvAlgorithm();
+  ptr = new SpectralDeconvolution();
   TEST_NOT_EQUAL(ptr, null_ptr)
 }
 END_SECTION
 
-START_SECTION(~FLASHDeconvAlgorithm())
+START_SECTION(~SpectralDeconvolution())
 {
   delete ptr;
 }
@@ -70,7 +70,7 @@ END_SECTION
 /// - getDecoyDeconvolvedSpectrum, isDecoy, addPreviouslyDeconvolvedMonoMass, clearPreviouslyDeconvolvedMonoMasses: under development
 /// - getAvgPPMError
 
-FLASHDeconvAlgorithm fd_algo = FLASHDeconvAlgorithm();
+SpectralDeconvolution fd_algo = SpectralDeconvolution();
 Param fd_param;
 fd_param.setValue("min_charge", 5);
 fd_param.setValue("max_charge", 20);
@@ -90,7 +90,7 @@ START_SECTION((void calculateAveragine(const bool use_RNA_averagine)))
   fd_param.setValue("max_mass", 2000.);
   fd_algo.setParameters(fd_param);
 
-  FLASHDeconvAlgorithm tmp_algo = FLASHDeconvAlgorithm();
+  SpectralDeconvolution tmp_algo = SpectralDeconvolution();
   fd_param.setValue("max_mass", 100.);
   tmp_algo.setParameters(fd_param);
 

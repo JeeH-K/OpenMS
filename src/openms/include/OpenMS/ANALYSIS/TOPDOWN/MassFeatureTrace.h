@@ -46,7 +46,7 @@ namespace OpenMS
 {
   /**
   @brief Feature trace in mass dimension for FLASHDeconv
-  This class performs mass tracing on the deconvolved masses by FLASHDeconvAlgorithm
+  This class performs mass tracing on the deconvolved masses by SpectralDeconvolution
   In other words, per spectrum deconvolved masses are converted into deconvolved features
   Currently only works for MS1 spectra. (Top-down DIA is not yet used much).
   Every time an MS1 spectrum is deconvolved, the relevant information is stored in this class.

@@ -33,7 +33,7 @@
 // --------------------------------------------------------------------------
 
 #include <OpenMS/ANALYSIS/TOPDOWN/DeconvolvedSpectrum.h>
-#include <OpenMS/ANALYSIS/TOPDOWN/FLASHDeconvAlgorithm.h>
+#include <OpenMS/ANALYSIS/TOPDOWN/SpectralDeconvolution.h>
 #include <OpenMS/ANALYSIS/TOPDOWN/MassFeatureTrace.h>
 #include <OpenMS/ANALYSIS/TOPDOWN/Qvalue.h>
 #include <OpenMS/APPLICATIONS/TOPPBase.h>
@@ -63,7 +63,7 @@ using namespace std;
   @brief FLASHDeconv performs ultrafast deconvolution of top down proteomics MS datasets.
   FLASHDeconv takes mzML file as input and outputs deconvolved feature list (.tsv) and
   deconvolved spectra files (.tsv, .mzML, .msalign, .ms1ft).
-  FLASHDeconv uses FLASHDeconvAlgorithm for spectral level deconvolution and MassFeatureTracer to detect mass features.
+  FLASHDeconv uses SpectralDeconvolution for spectral level deconvolution and MassFeatureTracer to detect mass features.
   Also for MSn spectra, the precursor masses (not peak m/zs) should be determined and assigned in most cases. This assignment
   can be done by tracking MSn-1 spectra deconvolution information. Thus FLASHDeconv class keeps MSn-1 spectra deconvolution information
   for a certain period for precursor mass assignment in DeconvolvedSpectrum class.
@@ -186,7 +186,7 @@ protected:
     setMinInt_("use_RNA_averagine", 0);
     setMaxInt_("use_RNA_averagine", 1);
 
-    Param fd_defaults = FLASHDeconvAlgorithm().getDefaults();
+    Param fd_defaults = SpectralDeconvolution().getDefaults();
     fd_defaults.setValue("tol", DoubleList {10.0, 10.0, 10.0}, "ppm tolerance for MS1, MS2, ... ");
     fd_defaults.setValue("min_charge", 1);
     fd_defaults.setValue("max_charge", 100);
@@ -490,9 +490,9 @@ protected:
     exp.clear(false);
     exp_annotated.clear(false);
 
-    auto fd = FLASHDeconvAlgorithm();
+    auto fd = SpectralDeconvolution();
 
-    FLASHDeconvAlgorithm fd_charge_dummy, fd_noise_dummy, fd_iso_dummy;
+    SpectralDeconvolution fd_charge_dummy, fd_noise_dummy, fd_iso_dummy;
 
     Param fd_param = getParam_().copy("Algorithm:", true);
     DoubleList tols = fd_param.getValue("tol");

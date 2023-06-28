@@ -56,29 +56,29 @@ namespace OpenMS
   @ingroup Topdown
 */
 
-  class OPENMS_DLLAPI FLASHDeconvAlgorithm : public DefaultParamHandler
+  class OPENMS_DLLAPI SpectralDeconvolution : public DefaultParamHandler
   {
   public:
     typedef FLASHDeconvHelperStructs::PrecalculatedAveragine PrecalculatedAveragine;
     typedef FLASHDeconvHelperStructs::LogMzPeak LogMzPeak;
 
     /// default constructor
-    FLASHDeconvAlgorithm();
+    SpectralDeconvolution();
 
     /// copy constructor
-    FLASHDeconvAlgorithm(const FLASHDeconvAlgorithm&) = default;
+    SpectralDeconvolution(const SpectralDeconvolution&) = default;
 
     /// move constructor
-    FLASHDeconvAlgorithm(FLASHDeconvAlgorithm&& other) = default;
+    SpectralDeconvolution(SpectralDeconvolution&& other) = default;
 
     /// assignment operator
-    FLASHDeconvAlgorithm& operator=(const FLASHDeconvAlgorithm& fd) = default;
+    SpectralDeconvolution& operator=(const SpectralDeconvolution& fd) = default;
 
     /// move assignment operator
-    FLASHDeconvAlgorithm& operator=(FLASHDeconvAlgorithm&& fd) = default;
+    SpectralDeconvolution& operator=(SpectralDeconvolution&& fd) = default;
 
     /// destructor
-    ~FLASHDeconvAlgorithm() = default;
+    ~SpectralDeconvolution() = default;
 
     /**
       @brief main deconvolution function that generates the deconvolved target and dummy spectrum based on the original spectrum.
@@ -148,7 +148,7 @@ namespace OpenMS
     static void addMZsToExcludsionList(const DeconvolvedSpectrum& dspec, std::unordered_set<double>& excluded_mzs);
 
     /**
-     *  set target dummy type for the FLASHDeconvAlgorithm run. All masses from the target FLASHDeconvAlgorithm run will have the target_dummy_type_.
+     *  set target dummy type for the SpectralDeconvolution run. All masses from the target SpectralDeconvolution run will have the target_dummy_type_.
      * @param target_dummy_type  This target_dummy_type_ specifies if a PeakGroup is a target (0), charge dummy (1), noise dummy (2), or isotope dummy (3)
      * @param target_dspec_for_dummy_calcualtion target masses from normal deconvolution
      */
