@@ -44,6 +44,7 @@
 #include <OpenMS/FORMAT/FileTypes.h>
 #include <OpenMS/FORMAT/MzMLFile.h>
 #include <OpenMS/METADATA/SpectrumLookup.h>
+#include <OpenMS/ANALYSIS/TOPDOWN/FLASHDeconvAlgorithm.h>
 
 #ifdef _OPENMP
   #include <omp.h>
@@ -228,65 +229,6 @@ protected:
     registerFullParam_(combined);
   }
 
-  static void filterLowPeaks(MSExperiment& map, Size count)
-  {
-    for (auto& it : map)
-    {
-      double threshold;
-      if (it.getType(false) == SpectrumSettings::CENTROID)
-      {
-        if (it.size() <= count)
-        {
-          return;
-        }
-        it.sortByIntensity(true);
-        threshold = it[count].getIntensity();
-      }
-      else
-      {
-        if (it.size() <= count)
-        {
-          continue;
-        }
-
-        it.sortByIntensity(true);
-        double max_intensity = log10(it[0].getIntensity());
-        double min_intensity = 0;
-        for (auto& p : it)
-        {
-          if (p.getIntensity() <= 0)
-          {
-            break;
-          }
-          min_intensity = log10(p.getIntensity());
-        }
-        Size bin_size = 500;
-        std::vector<int> freq(bin_size + 1, 0);
-        for (auto& p : it)
-        {
-          if (p.getIntensity() <= 0)
-          {
-            break;
-          }
-          Size bin = round((log10(p.getIntensity()) - min_intensity) / (max_intensity - min_intensity) * bin_size);
-          freq[bin]++;
-        }
-
-        int mod_bin = std::distance(freq.begin(), std::max_element(freq.begin(), freq.end())); // most frequent intensity is the threshold to distinguish between signal and noise
-
-        threshold =
-          3.0 * (pow(10.0, (double)mod_bin / bin_size * (max_intensity - min_intensity) +
-                             min_intensity)); // multiply by 3 to the most frequent intensity to make sure more signal component remains. Later this could be determined to use signal-to-noise ratio.
-      }
-      // pop back the low intensity peaks using threshold
-      while (it.size() > 0 && it[it.size() - 1].getIntensity() <= threshold)
-      {
-        it.pop_back();
-      }
-
-      it.sortByPosition();
-    }
-  }
 
   // the main_ function is called after all parameters are read
   ExitCodes main_(int, const char**) override
@@ -510,7 +452,7 @@ protected:
     // if a merged spectrum is analyzed, replace the input dataset with the merged one
     if (merge == 1)
     {
-      filterLowPeaks(map, max_peak_count_);
+      FLASHDeconvAlgorithm::filterLowPeaks(map, max_peak_count_);
       OPENMS_LOG_INFO << "Merging spectra using gaussian averaging... " << std::endl;
       SpectraMerger merger;
       merger.setLogType(log_type_);
@@ -528,7 +470,7 @@ protected:
     }
     else if (merge == 2)
     {
-      filterLowPeaks(map, max_peak_count_);
+      FLASHDeconvAlgorithm::filterLowPeaks(map, max_peak_count_);
       OPENMS_LOG_INFO << "Merging spectra into a single spectrum per MS level... " << std::endl;
       SpectraMerger merger;
       merger.setLogType(log_type_);
@@ -548,7 +490,7 @@ protected:
       fd_param.setValue("max_rt", .0);
     }
 
-    filterLowPeaks(map, max_peak_count_);
+    FLASHDeconvAlgorithm::filterLowPeaks(map, max_peak_count_);
 
     fd.setParameters(fd_param);
     fd.calculateAveragine(use_RNA_averagine);
