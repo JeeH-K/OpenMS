@@ -38,7 +38,7 @@
 
 namespace OpenMS
 {
-  static void filterLowPeaks(MSExperiment& map, Size count)
+  void FLASHDeconvAlgorithm::filterLowPeaks(MSExperiment& map, Size count)
   {
     for (auto& it : map)
     {

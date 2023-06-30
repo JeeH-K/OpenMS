@@ -10,6 +10,7 @@ MassFeatureTrace.cpp
 PeakGroup.cpp
 Qscore.cpp
 Qvalue.cpp
+FLASHDeconvAlgorithm.cpp
 )
 
 ### add path to the filenames

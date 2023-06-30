@@ -10,6 +10,7 @@ MassFeatureTrace.h
 PeakGroup.h
 Qscore.h
 Qvalue.h
+FLASHDeconvAlgorithm.h
 )
 
 ### add path to the filenames

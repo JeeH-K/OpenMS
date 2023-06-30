@@ -38,7 +38,7 @@
 #include <OpenMS/METADATA/SpectrumSettings.h>
 
 
-using namespace OpenMS
+using namespace OpenMS;
 
 namespace OpenMS
 {
@@ -47,9 +47,10 @@ namespace OpenMS
   From MSSpectrum, this class outputs DeconvolvedSpectrum.
   */
 
-	class OPENMS_DLLAPI FLASHDeconvAlogorithm
+	class OPENMS_DLLAPI FLASHDeconvAlgorithm
   {
   public:
     static void filterLowPeaks(MSExperiment& map, Size count);
+  };
 
 }
