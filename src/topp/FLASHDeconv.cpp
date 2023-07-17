@@ -82,6 +82,12 @@ public:
 protected:
   // this function will be used to register the tool parameters
   // it gets automatically called on tool execution
+
+
+
+
+
+    // 1. registerOptionsAndFlags_ _start
   void registerOptionsAndFlags_() override
   {
     registerInputFile_("in", "<file>", "", "Input file (mzML)");
@@ -228,15 +234,30 @@ protected:
 
     registerFullParam_(combined);
   }
+  // 1. registerOptionsAndFlags_ _end
 
 
-  // the main_ function is called after all parameters are read
+
+
+
+
+
+
+
+  // 2. main 함수
   ExitCodes main_(int, const char**) override
   {
     OPENMS_LOG_INFO << "Initializing ... " << endl;
     //-------------------------------------------------------------
     // parsing parameters
     //-------------------------------------------------------------
+    // 
+    // 
+    // 
+    // 
+    // 
+    // 
+    // 2.1 parsing parameters _start
     const Size max_peak_count_ = 3e4;
     String in_file = getStringOption_("in");
     String out_file = getStringOption_("out");
@@ -264,7 +285,15 @@ protected:
     int target_precursor_charge = getIntOption_("target_precursor_charge");
     double target_precursor_mz = target_precursor_charge != 0 ? getDoubleOption_("target_precursor_mz") : .0;
     double target_precursor_mass = .0;
+    // 2.1 parsing parameters _end
 
+
+
+
+
+
+
+    // 2.2 open stream and write header_start
     fstream out_stream, out_promex_stream;
     std::vector<fstream> out_spec_streams, out_topfd_streams, out_topfd_feature_streams;
 
@@ -305,7 +334,13 @@ protected:
         FLASHDeconvSpectrumFile::writeDeconvolvedMassesHeader(out_spec_streams[i], i + 1, write_detail, report_dummy);
       }
     }
+    // 2.2 open stream and write header_end
 
+
+
+
+
+    //아래 6줄은 무슨 코드인지 모르겠다.
     std::map<int, std::vector<std::vector<float>>> precursor_map_for_real_time_acquisition; // ms1 scan -> mass, charge ,score, mz range, precursor int, mass int, color
 
     if (!precursor_map_for_real_time_acquisition.empty())
@@ -315,7 +350,15 @@ protected:
     //-------------------------------------------------------------
     // reading input
     //-------------------------------------------------------------
+ 
 
+
+
+
+
+
+
+    // 2.3 set mzml_options_start
     MSExperiment map;
     MzMLFile mzml;
 
@@ -342,10 +385,14 @@ protected:
     mzml.setLogType(log_type_);
     mzml.setOptions(opt);
     mzml.load(in_file, map);
+    // 2.3 set mzml_options_start _end
+
+
+
+
 
     uint current_max_ms_level = 0;
     uint current_min_ms_level = 1000;
-
     auto spec_cntr = std::vector<size_t>(max_ms_level, 0);
     // spectrum number with at least one deconvolved mass per ms level per input file
     auto qspec_cntr = std::vector<size_t>(max_ms_level, 0);
@@ -356,14 +403,31 @@ protected:
     std::map<int, double> scan_rt_map;
     std::map<int, PeakGroup> precursor_peak_groups; // MS2 scan number, peak group
 
+
+
+
+
     // read input dataset once to count spectra
+
+
     double gradient_rt = .0;
+
+
+
+
+
+    //2.4 for loop_start
     for (auto& it : map)
     {
+
+
+
+        //2.4.1 basic MSSpectrum check _start
       gradient_rt = std::max(gradient_rt, it.getRT());
       // if forced_ms_level > 0, force MS level of all spectra to 1.
       if (forced_ms_level > 0)
       {
+
         it.setMSLevel(forced_ms_level);
       }
 
@@ -380,7 +444,17 @@ protected:
       uint ms_level = it.getMSLevel();
       current_max_ms_level = current_max_ms_level < ms_level ? ms_level : current_max_ms_level;
       current_min_ms_level = current_min_ms_level > ms_level ? ms_level : current_min_ms_level;
+      // 2.4.1 basic MSSpectrum check _end
 
+
+
+
+
+
+
+      //precursor_start.
+      //target_precursor_charge,mz는 무엇일까? > 모든 MS2 이상의 spectrum의 precursor를 내가 target한 precursor의 charge와 mz로 바꾸는 것.
+      //2.4.2 target precursor _start
       if (ms_level > 1 && target_precursor_charge != 0)
       {
         if (it.getPrecursors().size() == 0)
@@ -405,8 +479,15 @@ protected:
           {
             it.getPrecursors()[0].setMZ(target_precursor_mz);
           }
+          // 2.4.2 target precursor _end
         }
       }
+
+
+
+
+
+
 
       if (min_rt > 0 && it.getRT() < min_rt)
       {
@@ -417,6 +498,13 @@ protected:
         break;
       }
     }
+    // 2.4 for loop_end
+
+
+
+
+
+
     // Max MS Level is adjusted according to the input dataset
     current_max_ms_level = current_max_ms_level > max_ms_level ? max_ms_level : current_max_ms_level;
     // Run FLASHDeconv here
@@ -448,8 +536,15 @@ protected:
       }
     }
 
-
+    //merge 내용은 꼭 FLASHDeconvAlgorithm으로 가야함.
     // if a merged spectrum is analyzed, replace the input dataset with the merged one
+
+
+
+
+
+
+    //2.5 merge_start
     if (merge == 1)
     {
       FLASHDeconvAlgorithm::filterLowPeaks(map, max_peak_count_);
@@ -489,6 +584,13 @@ protected:
       fd_param.setValue("min_rt", .0);
       fd_param.setValue("max_rt", .0);
     }
+    //2.5 merge_end
+
+
+
+
+
+
 
     FLASHDeconvAlgorithm::filterLowPeaks(map, max_peak_count_);
 
@@ -511,6 +613,13 @@ protected:
       fd_iso_dummy.setTargetDummyType(PeakGroup::TargetDummyType::isotope_dummy, fd.getDeconvolvedSpectrum()); // isotope
     }
 
+
+
+
+
+
+
+    //2.5 MassFeatureTrace_start
     auto mass_tracer = MassFeatureTrace();
     Param mf_param = getParam_().copy("FeatureTracing:", true);
     DoubleList isotope_cosines = fd_param.getValue("min_isotope_cosine");
@@ -530,6 +639,16 @@ protected:
       mf_param.setValue("min_isotope_cosine", isotope_cosines[0]);
     }
     mass_tracer.setParameters(mf_param);
+    // 2.5 MassFeatureTrace_end
+
+
+
+
+
+
+
+
+
 
     ProgressLogger progresslogger;
     progresslogger.setLogType(log_type_);
@@ -541,17 +660,39 @@ protected:
     std::vector<DeconvolvedSpectrum> dummy_deconvolved_spectra;
     dummy_deconvolved_spectra.reserve(map.size() * 3); // there are 3 different kinds of dummy spectra. And we reserve for them.
 
+
+
+
+
+
+
+
+
+    //3 (for문) 
     for (auto it = map.begin(); it != map.end(); ++it)
     {
+        // 3.1 scan number 정하기 _start.
       int scan_number = map.getSourceFiles().empty() ? -1 : SpectrumLookup::extractScanNumber(it->getNativeID(), map.getSourceFiles()[0].getNativeIDTypeAccession());
 
+      
       if (scan_number < 0)
       {
         scan_number = (int)std::distance(map.begin(), it) + 1;
       }
+      // 3.1 scan number 정하기 _end.
+
+
+
 
       progresslogger.nextProgress();
 
+
+
+
+
+
+
+      // 3.2 spectrum이 기준에 맞는지 check _start.
       if (it->empty())
       {
         continue;
@@ -568,6 +709,18 @@ protected:
         OPENMS_LOG_INFO << "Target precursor charge is set but no precursor m/z is found in MS2 spectra. Specify target precursor m/z with -target_precursor_mz option" << std::endl;
         return EXTERNAL_PROGRAM_ERROR;
       }
+      // 3.2 spectrum이 기준에 맞는지 check _end.
+
+
+
+
+
+
+
+
+
+
+
 
       spec_cntr[ms_level - 1]++;
       auto deconv_begin = clock();
@@ -588,6 +741,12 @@ protected:
         continue;
       }
 
+
+
+
+
+
+      // 3.3 _target_precursor_mass, target_precursor_charge _start 
       if (ms_level > 1 && target_precursor_charge != 0)
       {
         auto precursor = it->getPrecursors()[0];
@@ -603,7 +762,13 @@ protected:
         deconvolved_spectrum.setPrecursor(precursor);
         deconvolved_spectrum.setPrecursorPeakGroup(precursorPeakGroup);
       }
+      // 3.3 _target_precursor_mass, target_precursor_charge _end
 
+
+
+
+
+      //3.4 expected_identification_count _start
       if (it->getMSLevel() > 1 && !deconvolved_spectrum.getPrecursorPeakGroup().empty())
       {
         precursor_peak_groups[scan_number] = deconvolved_spectrum.getPrecursorPeakGroup();
@@ -612,6 +777,14 @@ protected:
           expected_identification_count += deconvolved_spectrum.getPrecursorPeakGroup().getQscore();
         }
       }
+      // 3.4 expected_identification_count _end
+
+
+
+
+
+
+      // 3.5 add deconvolvedspectrum to MSExperiment _start 
       bool deconved_mzML_written = false;
       if (!out_mzml_file.empty())
       {
@@ -625,7 +798,14 @@ protected:
           }
         }
       }
+      // 3.5 add deconvolvedspectrum to MSExperiment _end
 
+
+
+
+
+
+      // 3.6 make annotated file _start
       if (!out_anno_mzml_file.empty())
       {
         if (out_mzml_file.empty() || deconved_mzML_written)
@@ -656,6 +836,15 @@ protected:
           }
         }
       }
+      // 3.6 make annotated file _end
+
+
+
+
+
+
+
+
       if (ms_level < current_max_ms_level)
       {
         if ((int)last_deconvolved_spectra[ms_level].size() >= num_last_deconvolved_spectra)
@@ -687,6 +876,10 @@ protected:
         dummy_deconvolved_spectrum.setOriginalSpectrum(*it);
         dummy_deconvolved_spectrum.reserve(fd_iso_dummy.getDeconvolvedSpectrum().size() + fd_charge_dummy.getDeconvolvedSpectrum().size() + fd_noise_dummy.getDeconvolvedSpectrum().size());
 
+
+
+
+        // 3.7 dummy spectrum to dummy_deconvolved_spectrum _start
         for (auto& pg : fd_charge_dummy.getDeconvolvedSpectrum())
         {
           if (pg.getQscore() < qscore_threshold_for_dummy)
@@ -713,6 +906,12 @@ protected:
           }
           dummy_deconvolved_spectrum.push_back(pg);
         }
+        // 3.7 dummyspectrum to dummy_deconvolved_spectrum _end
+
+
+
+
+
 
         deconvolved_spectrum.sort();
         dummy_deconvolved_spectrum.sort();
@@ -765,6 +964,14 @@ protected:
       }
     }
 
+
+
+
+
+
+
+
+    //3.8 write featurefile _start
     // mass_tracer run
     if (merge != 2) // unless spectra are merged into a single one
     {
@@ -784,6 +991,18 @@ protected:
         FLASHDeconvFeatureFile::writePromexFeatures(mass_features, precursor_peak_groups, scan_rt_map, avg, out_promex_stream);
       }
     }
+    // 3.8 write featurefile _end
+
+
+
+
+
+
+
+
+
+
+
 
     if (!out_mzml_file.empty())
     {
@@ -796,6 +1015,10 @@ protected:
       MzMLFile mzml_file;
       mzml_file.store(out_anno_mzml_file, exp_annotated);
     }
+
+
+
+
 
     for (int j = 0; j < (int)current_max_ms_level; j++)
     {
