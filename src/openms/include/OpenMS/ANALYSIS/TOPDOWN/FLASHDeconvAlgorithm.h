@@ -36,6 +36,7 @@
 
 #include <OpenMS/KERNEL/MSExperiment.h>
 #include <OpenMS/METADATA/SpectrumSettings.h>
+#include <OpenMS/CONCEPT/ProgressLogger.h>
 
 
 using namespace OpenMS;
@@ -51,6 +52,18 @@ namespace OpenMS
   {
   public:
     static void filterLowPeaks(MSExperiment& map, Size count);
+
+    int SpectrumDeconvolution(MSExperiment& map, ProgressLogger& progresslogger, uint& current_max_ms_level, const int target_precursor_charge, std::vector<size_t>& spec_cntr,
+                                                     std::unordered_map<UInt, std::vector<DeconvolvedSpectrum>>& last_deconvolved_spectra, SpectralDeconvolution fd,
+                                                     std::map<int, std::vector<std::vector<float>>> precursor_map_for_real_time_acquisition, double target_precursor_mass,
+                                                     std::map<int, PeakGroup>& precursor_peak_groups, double topFD_SNR_threshold, double& expected_identification_count, String out_mzml_file,
+                                                     int mzml_charge, uint current_min_ms_level, const DoubleList tols, MSExperiment& exp, String out_anno_mzml_file, MSExperiment& exp_annotated,
+                                                     int num_last_deconvolved_spectra, const int merge, std::map<int, double>& scan_rt_map, const bool report_dummy,
+                                                     SpectralDeconvolution fd_charge_dummy, SpectralDeconvolution fd_noise_dummy, SpectralDeconvolution fd_iso_dummy,
+                                                     std::vector<DeconvolvedSpectrum>& dummy_deconvolved_spectra, std::vector<size_t>& qspec_cntr, std::vector<size_t>& mass_cntr,
+                                                     std::vector<DeconvolvedSpectrum>& deconvolved_spectra, std::vector<double>& elapsed_deconv_cpu_secs,
+                                                     std::vector<double>& elapsed_deconv_wall_secs);
   };
 
+    typedef unsigned int uint;
 }
