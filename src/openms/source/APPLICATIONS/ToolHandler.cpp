@@ -49,6 +49,7 @@ namespace OpenMS
     tools_map["BaselineFilter"] = Internal::ToolDescription("BaselineFilter", "Signal processing and preprocessing");
     tools_map["CompNovo"] = Internal::ToolDescription("CompNovo", "Identification");
     tools_map["CompNovoCID"] = Internal::ToolDescription("CompNovoCID", "Identification");
+    tools_map["ConsensusFeatureGroupDetector"] = Internal::ToolDescription("ConsensusFeatureGroupDetector", "Top-Down");
     tools_map["ConsensusID"] = Internal::ToolDescription("ConsensusID", "ID Processing");
     tools_map["ConsensusMapNormalizer"] = Internal::ToolDescription("ConsensusMapNormalizer", "Map Alignment");
     tools_map["CometAdapter"] = Internal::ToolDescription("CometAdapter", "Identification");
@@ -74,6 +75,7 @@ namespace OpenMS
     tools_map["FileInfo"] = Internal::ToolDescription("FileInfo", "File Handling");
     tools_map["FileMerger"] = Internal::ToolDescription("FileMerger", "File Handling");
     tools_map["FLASHDeconv"] = Internal::ToolDescription("FLASHDeconv", "Signal processing and preprocessing");
+    tools_map["FLASHQuant"] = Internal::ToolDescription("FLASHQuant", "Top-Down");
     tools_map["GNPSExport"] = Internal::ToolDescription("GNPSExport", "File Handling");
     tools_map["HighResPrecursorMassCorrector"] = Internal::ToolDescription("HighResPrecursorMassCorrector", "Signal processing and preprocessing");
     tools_map["IDConflictResolver"] = Internal::ToolDescription("IDConflictResolver", "ID Processing");
