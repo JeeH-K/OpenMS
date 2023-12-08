@@ -7,6 +7,7 @@ AccurateMassSearch
 AssayGeneratorMetabo
 ClusterMassTraces
 ClusterMassTracesByPrecursor
+ConsensusFeatureGroupDetector
 CVInspector
 DatabaseFilter
 DecoyDatabase
@@ -65,7 +66,6 @@ SpectraSTSearchAdapter
 StaticModification
 SvmTheoreticalSpectrumGeneratorTrainer
 TICCalculator
-TopDownConsensusFeatureGroup
 TransformationEvaluation
 TriqlerConverter
 XMLValidator
