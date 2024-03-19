@@ -11,7 +11,7 @@ on:
       package:
         type: boolean
         description: Build and upload packages/installer/documentation?
-        default: false
+        default: true
       knime:
         type: boolean
         description: Build and upload KNIME plugins and update site?
