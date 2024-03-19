@@ -26,6 +26,7 @@ cdef extern from "<OpenMS/ANALYSIS/TOPDOWN/FLASHTaggerAlgorithm.h>" namespace "O
         libcpp_vector[Tag] getTags(ProteinHit & hit) except + nogil
         libcpp_vector[ProteinHit] getProteinHits() except + nogil
         libcpp_vector[ProteinHit] getProteinHits(Tag & tag) except + nogil
+        libcpp_vector[int] getMatchedPositions(ProteinHit & hit, Tag & tag) except + nogil
         int getProteinIndex(ProteinHit & hit) except + nogil
         int getTagIndex(Tag & tag) except + nogil
 

@@ -1,3 +1,4 @@
+from numpy.lib.stride_tricks import as_strided
 
 
 

@@ -6,6 +6,7 @@ from . import ConsensusFeature as _ConsensusFeature
 from . import FeatureMap as _FeatureMap
 from . import Feature as _Feature
 from . import MSExperiment as _MSExperiment
+from . import FLASHTaggerAlgorithm as _FLASHTaggerAlgorithm
 from . import PeptideIdentification as _PeptideIdentification
 from . import ControlledVocabulary as _ControlledVocabulary
 from . import File as _File
@@ -13,6 +14,75 @@ from . import IonSource as _IonSource
 
 import pandas as _pd
 import numpy as _np
+
+class _FLASHTaggerAlgorithmDF(_FLASHTaggerAlgorithm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+    
+    def get_tag_df(self):
+
+        proteinHits = self.getProteinHits()
+        tags = self.getTags()
+
+        df = {
+            "TagIndex" : [],
+            "ProteinIndex" : [],
+            "ProteinAccession" : [],
+            "ProteinDescription" : [],
+            "TagSequence" : [],
+            "Nmass" : [],
+            "Cmass" : [],
+            "Pos" : [],
+            "Length" : [],
+            "DeNovoScore" : [],
+            "mzs" : [],
+        }
+        
+        for n in range(len(proteinHits)+1):
+            for tag in tags:
+                hits = self.getProteinHits(tag)
+                if n < len(proteinHits):
+                    for hit in hits:
+                        if n == self.getProteinIndex(hit):
+                            break
+                    else:
+                        continue
+                elif len(hits) != 0:
+                    continue
+                
+                acc = ""
+                description = ""
+                hitindices = ""
+                pos = ""
+
+                for hit in hits:
+                    if acc != "":
+                        acc += ";"
+                        description += ";"
+                        hitindices += ";"
+                        pos += ";"
+                    acc += str(hit.getAccession())
+                    description += str(hit.getDescription())
+                    hitindices += str(self.getProteinIndex(hit))
+                    pos += str(self.getMatchedPositions(hit, tag))
+
+                mzs = ','.join(str(t) for t in tag.getMzs())
+
+                df["TagIndex"].append(self.getTagIndex(tag))
+                df["ProteinIndex"].append(hitindices)
+                df["ProteinAccession"].append(acc)
+                df["ProteinDescription"].append(description)
+                df["TagSequence"].append(tag.getSequence())
+                df["Nmass"].append(tag.getNtermMass())
+                df["Cmass"].append(tag.getCtermMass())
+                df["Pos"].append(pos)
+                df["Length"].append(len(tag.getSequence()))
+                df["DeNovoScore"].append(tag.getScore())
+                df["mzs"].append(mzs)
+
+        return _pd.DataFrame(df)
+    
+FLASHTaggerAlgorithm = _FLASHTaggerAlgorithmDF
 
 class _ConsensusMapDF(_ConsensusMap):
     def __init__(self, *args, **kwargs):
