@@ -32,6 +32,7 @@ on:
     branches:
       - nightly
       - release/*
+      - TaggerViewerDeployment
   pull_request:
     branches:
       - develop
