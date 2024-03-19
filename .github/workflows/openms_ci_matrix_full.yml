@@ -11,7 +11,7 @@ on:
       package:
         type: boolean
         description: Build and upload packages/installer/documentation?
-        default: false
+        default: true
       knime:
         type: boolean
         description: Build and upload KNIME plugins and update site?
@@ -51,31 +51,31 @@ jobs:
             compiler: cl.exe
             compiler_ver: default
 
-          - os: macos-13
-            # Since the appleclang version is dependent on the XCode versions that are installed
-            #  on the GH runners, use this as the choice for a specific version
-            # TODO currently unused but XCode/appleclang is the default
-            compiler: xcode
-            # TODO implement support for other versions
-            compiler_ver: 14.2
-
-          - os: macos-14
-            # Since the appleclang version is dependent on the XCode versions that are installed
-            #  on the GH runners, use this as the choice for a specific version
-            # TODO currently unused but XCode/appleclang is the default
-            compiler: xcode
-            # TODO implement support for other versions
-            compiler_ver: 15.0.1
-
+          #- os: macos-13
+          #  # Since the appleclang version is dependent on the XCode versions that are installed
+          #  #  on the GH runners, use this as the choice for a specific version
+          #  # TODO currently unused but XCode/appleclang is the default
+          #  compiler: xcode
+          #  # TODO implement support for other versions
+          #  compiler_ver: 14.2
+          #
+          #- os: macos-14
+          #  # Since the appleclang version is dependent on the XCode versions that are installed
+          #  #  on the GH runners, use this as the choice for a specific version
+          #  # TODO currently unused but XCode/appleclang is the default
+          #  compiler: xcode
+          #  # TODO implement support for other versions
+          #  compiler_ver: 15.0.1
+          #
           # Make sure the compilers are available in that version on the GH runners
           # We are not installing anything.
-          - os: ubuntu-22.04
-            compiler: g++
-            compiler_ver: 11
-
-          - os: ubuntu-22.04
-            compiler: clang++
-            compiler_ver: 15
+          #- os: ubuntu-22.04
+          #  compiler: g++
+          #  compiler_ver: 11
+          #
+          #- os: ubuntu-22.04
+          #  compiler: clang++
+          #  compiler_ver: 15
     outputs:
       version_number: ${{ steps.create_changelog.outputs.version_number }}
 
