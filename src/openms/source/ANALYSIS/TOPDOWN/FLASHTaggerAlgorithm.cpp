@@ -559,13 +559,25 @@ Size FLASHTaggerAlgorithm::find_with_X_(const std::string_view& A, const String&
 // Make output struct containing all information about matched entries and tags, coverage, score etc.
 void FLASHTaggerAlgorithm::runMatching(const String& fasta_file)
 {
+  std::cout << fasta_file << std::endl;
+  std::cout << 1 << std::endl;
   std::vector<FASTAFile::FASTAEntry> fasta_entry;
+  std::cout << 2 << std::endl;
   FASTAFile ffile;
+  std::cout << 3 << std::endl;
   ffile.load(fasta_file, fasta_entry);
+  std::cout << 4 << std::endl;
+
 
   std::vector<std::pair<ProteinHit, std::vector<int>>> pairs;
+  std::cout << 5 << std::endl;
+
   std::vector<int> start_loc(tags_.size(), 0);
+  std::cout << 6 << std::endl;
+
   std::vector<int> end_loc(tags_.size(), 0);
+  std::cout << 7 << std::endl;
+
 
   // for each tag, find the possible start and end locations in the protein sequence. If C term, they are negative values to specify values are from
   // the end of the protein
@@ -578,9 +590,13 @@ void FLASHTaggerAlgorithm::runMatching(const String& fasta_file)
     start_loc[i] = std::max(0, int(floor(flanking_mass - flanking_mass_tol_) / aa_mass_map_.rbegin()->first));
     end_loc[i] = int(ceil(flanking_mass + flanking_mass_tol_) / aa_mass_map_.begin()->first) + (int)tag.getLength() + 1;
   }
-
+  std::cout << 8 << std::endl;
   int min_hit_tag_score = max_path_score_;
+  std::cout << 9 << std::endl;
+  
   double decoy_mul = .0;
+  std::cout << 9 << std::endl;
+
 
   for (int n = 0; n < 2; n++)
   {
@@ -703,20 +719,30 @@ void FLASHTaggerAlgorithm::runMatching(const String& fasta_file)
       }
     }
   }
+  std::cout << 10 << std::endl;
   if (pairs.empty()) return;
+  std::cout << 11 << std::endl;
 
   protein_hits_.reserve(pairs.size());
+  std::cout << 12 << std::endl;
 
   std::sort(pairs.begin(), pairs.end(),
             [](const std::pair<ProteinHit, std::vector<int>>& left, const std::pair<ProteinHit, std::vector<int>>& right) {
               return left.first.getScore() > right.first.getScore();
             });
+  std::cout << 13 << std::endl;
+    
 
   // FDR calculation
   double cum_target_count = 0;
   double cum_decoy_count = 0;
 
+  std::cout << 14 << std::endl;
+
   decoy_mul /= fasta_entry.size() - decoy_mul;
+
+  std::cout << 15 << std::endl;
+
 
   for (auto& [hit, indices] : pairs)
   {
@@ -729,15 +755,29 @@ void FLASHTaggerAlgorithm::runMatching(const String& fasta_file)
     hit.setMetaValue("qvalue", qvalue);
   }
 
+  std::cout << 16 << std::endl;
+
+
   double min_qvalue = 1;
+  std::cout << 17 << std::endl;
+
   for (auto iter = pairs.rbegin(); iter != pairs.rend(); iter++)
   {
     min_qvalue = std::min(min_qvalue, (double)iter->first.getMetaValue("qvalue"));
     iter->first.setMetaValue("qvalue", min_qvalue);
   }
 
+  std::cout << 18 << std::endl;
+
+
   matching_tags_indices_.reserve(pairs.size());
+
+  std::cout << 19 << std::endl;
+
   matching_hits_indices_ = std::vector<std::vector<int>>(tags_.size());
+
+  std::cout << 20 << std::endl;
+
 
   for (const auto& [hit, indices] : pairs)
   {
@@ -751,6 +791,8 @@ void FLASHTaggerAlgorithm::runMatching(const String& fasta_file)
       matching_hits_indices_[index].push_back(protein_hits_.size() - 1);
     }
   }
+  std::cout << 21 << std::endl;
+
 }
 
 int FLASHTaggerAlgorithm::getProteinIndex(const ProteinHit& hit) const
