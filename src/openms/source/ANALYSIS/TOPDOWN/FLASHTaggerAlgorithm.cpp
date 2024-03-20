@@ -600,124 +600,279 @@ void FLASHTaggerAlgorithm::runMatching(const String& fasta_file)
 
   for (int n = 0; n < 2; n++)
   {
+    std::cout << 9.1 << std::endl;
 // #pragma omp parallel for default(none) shared(pairs, fasta_entry, start_loc, end_loc, decoy_mul, min_hit_tag_score, n)
     for (int i = 0; i < fasta_entry.size(); i++)
     {
+      std::cout << 9.11 << std::endl;
       const auto& fe = fasta_entry[i];
+      std::cout << 9.12 << std::endl;
       bool is_decoy = false;
+      std::cout << 9.13 << std::endl;
       if (fe.identifier.hasPrefix("DECOY")) { is_decoy = true; }
-
+      std::cout << 9.14 << std::endl;
       if (is_decoy && n == 0)
       {
+        std::cout << 9.141 << std::endl;
 // #pragma omp critical
         decoy_mul++;
+        std::cout << 9.142 << std::endl;
         continue;
       }
+      std::cout << 9.15 << std::endl;
       if (! is_decoy && n != 0) continue;
-
+      std::cout << 9.16 << std::endl;
       std::vector<int> matched_tag_indices;
+      std::cout << 9.17 << std::endl;
       auto x_pos = fe.sequence.find('X');
+      std::cout << 9.18 << std::endl;
       std::map<Size, int> matched_pos_score;
+      std::cout << 9.19 << std::endl;
       // find range, match allowing X.
       for (int j = 0; j < tags_.size(); j++)
       {
+        std::cout << 9.191 << std::endl;
+
         auto& tag = tags_[j];
+        std::cout << 9.192 << std::endl;
+
         if (is_decoy && tag.getScore() < min_hit_tag_score) break;
+        std::cout << 9.193 << std::endl;
+
         bool isNterm = tag.getNtermMass() > 0;
+        std::cout << 9.194 << std::endl;
 
         int s, n;
+        std::cout << 9.195 << std::endl;
+
         if (isNterm) { s = start_loc[j]; }
+        std::cout << 9.196 << std::endl;
+
         else { s = std::max(0, int(fe.sequence.length()) - 1 - end_loc[j]); }
+        std::cout << 9.197 << std::endl;
+
         n = std::min(end_loc[j] - start_loc[j], int(fe.sequence.length()) - s);
+        std::cout << 9.198 << std::endl;
+
         const auto sub_seq = std::string_view(fe.sequence.data() + s, n);
+        std::cout << 9.199 << std::endl;
+
 
         if (sub_seq.length() < tag.getLength()) continue;
+        std::cout << 9.121 << std::endl;
+
 
         auto uppercase_tag_seq = tag.getSequence().toUpper();
+        std::cout << 9.122 << std::endl;
+
         std::vector<int> positions;
+        std::cout << 9.123 << std::endl;
+
         int tpos = 0;
+        std::cout << 9.124 << std::endl;
+
         while (true)
         {
+          std::cout << 9.1241 << std::endl;
+
           tpos = sub_seq.find(uppercase_tag_seq, tpos);
+          std::cout << 9.1242 << std::endl;
+
           if (tpos == std::string_view::npos) break;
+          std::cout << 9.1243 << std::endl;
+
           positions.push_back(tpos + s);
+          std::cout << 9.1244 << std::endl;
+
           tpos++;
+          std::cout << 9.1245 << std::endl;
+
         }
+        std::cout << 9.125 << std::endl;
+
 
         if (positions.empty() && x_pos >= s && x_pos <= s + n) // only if perfect hits are not found and X exists
         {
+          std::cout << 9.1251 << std::endl;
           tpos = 0;
+          std::cout << 9.1252 << std::endl;
+
           while (true)
           {
+            std::cout << 9.12521 << std::endl;
+
             tpos = find_with_X_(sub_seq, uppercase_tag_seq, tpos);
+            std::cout << 9.12522 << std::endl;
+
             if (tpos == std::string_view::npos) break;
+            std::cout << 9.12523 << std::endl;
+
             positions.push_back(tpos + s);
+            std::cout << 9.12524 << std::endl;
+
             tpos++;
+            std::cout << 9.12525 << std::endl;
+
           }
         }
+        std::cout << 9.126 << std::endl;
 
         bool matched = false;
+        std::cout << 9.127 << std::endl;
+
         for (const auto& pos : positions)
         {
+          std::cout << 9.1271 << std::endl;
+
           if (tag.getNtermMass() > 0 && pos >= 0)
           {
+            std::cout << 9.12711 << std::endl;
+
             auto nterm = fe.sequence.substr(0, pos);
+            std::cout << 9.12712 << std::endl;
+
             if (x_pos != String::npos) { nterm.erase(remove(nterm.begin(), nterm.end(), 'X'), nterm.end()); }
+            std::cout << 9.12713 << std::endl;
+            
             double aamass = nterm.empty() ? 0 : AASequence::fromString(nterm).getMonoWeight();
+            std::cout << 9.12714 << std::endl;
+            
             if (std::abs(tag.getNtermMass() - aamass) > flanking_mass_tol_) continue;
+            std::cout << 9.12715 << std::endl;
+
           }
+          std::cout << 9.1272 << std::endl;
 
           if (tag.getCtermMass() > 0 && pos + tag.getSequence().length() < fe.sequence.length())
           {
+            std::cout << 9.12721 << std::endl;
+
             auto cterm = fe.sequence.substr(pos + tag.getSequence().length());
+            std::cout << 9.12722 << std::endl;
+
             if (x_pos != String::npos) cterm.erase(remove(cterm.begin(), cterm.end(), 'X'), cterm.end());
+            std::cout << 9.12723 << std::endl;
 
             double aamass = cterm.empty() ? 0 : AASequence::fromString(cterm).getMonoWeight();
+            std::cout << 9.12724 << std::endl;
+
             if (std::abs(tag.getCtermMass() - aamass) > flanking_mass_tol_) continue;
+            std::cout << 9.12725 << std::endl;
+
           }
+
+          std::cout << 9.1273 << std::endl;
 
           for (int off = 0; off < tag.getLength(); off++)
           {
+            std::cout << 9.12731 << std::endl;
+
             int score = tag.getScore(off);
+            std::cout << 9.12732 << std::endl;
+
             auto iter = matched_pos_score.find(pos + off);
+            std::cout << 9.12733 << std::endl;
+
             if (iter != matched_pos_score.end()) score = std::max(score, iter->second);
+            std::cout << 9.12734 << std::endl;
+
             matched_pos_score[pos + off] = score;
+            std::cout << 9.12735 << std::endl;
+
+
             matched = true;
+            std::cout << 9.12736 << std::endl;
+
           }
+            std::cout << 9.1274 << std::endl;
+
         }
+        std::cout << 9.128 << std::endl;
+
         if (matched)
         {
+          std::cout << 9.1281 << std::endl;
+
           matched_tag_indices.push_back(j); // tag indices
+          std::cout << 9.1282 << std::endl;
+
         }
         else
           continue;
+        std::cout << 9.129 << std::endl;
+        
+        
 // #pragma omp critical
         if (! is_decoy) min_hit_tag_score = std::min(min_hit_tag_score, tag.getScore());
+        std::cout << 9.130 << std::endl;
+
       }
+      std::cout << 9.14 << std::endl;
+
       if (matched_tag_indices.empty()) continue;
+      std::cout << 9.15 << std::endl;
+
 
       int match_cntr = 0;
+      std::cout << 9.16 << std::endl;
+
+
       int match_score = 0;
+      std::cout << 9.17 << std::endl;
+
       for (const auto& ps : matched_pos_score)
       {
+      std::cout << 9.171 << std::endl;
+
         if (fe.sequence[ps.first] == 'X') continue;
+      std::cout << 9.172 << std::endl;
+
         match_cntr++;
+      std::cout << 9.173 << std::endl;
+
         match_score += ps.second;
+
+      std::cout << 9.174 << std::endl;
+      
       }
+      std::cout << 9.18 << std::endl;
+
 
       if (match_cntr < min_cov_aa_) continue;
+      std::cout << 9.19 << std::endl;
+
       //(double score, UInt rank, String accession, String sequence)
       ProteinHit hit(0, 0, fe.identifier, fe.sequence); //
+      std::cout << 9.20 << std::endl;
+
       hit.setDescription(fe.description);
+      std::cout << 9.21 << std::endl;
+
       hit.setMetaValue("MatchedAA", match_cntr);
+
+      std::cout << 9.22 << std::endl;
+
       hit.setMetaValue("IsDecoy", is_decoy ? 1 : 0);
+
+      std::cout << 9.23 << std::endl;
+
       hit.setCoverage(double(match_cntr) / fe.sequence.length());
+
+      std::cout << 9.24 << std::endl;
+
       hit.setScore(match_score);
+
+      std::cout << 9.25 << std::endl;
+
 // #pragma omp critical
       {
         pairs.emplace_back(hit, matched_tag_indices);
       }
+      std::cout << 9.26 << std::endl;
+
     }
+    std::cout << 9.3 << std::endl;
+
   }
   std::cout << 10 << std::endl;
   if (pairs.empty()) return;
