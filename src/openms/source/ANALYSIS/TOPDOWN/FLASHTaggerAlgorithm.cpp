@@ -444,10 +444,7 @@ void FLASHTaggerAlgorithm::updateTagSet_(std::set<FLASHDeconvHelperStructs::Tag>
   }
 }
 
-void FLASHTaggerAlgorithm::run(const std::vector<double>& mzs,
-                               const std::vector<int>& scores,
-                               const std::vector<int>& scans,
-                               double ppm)
+void FLASHTaggerAlgorithm::run(const std::vector<double>& mzs, const std::vector<int>& scores, const std::vector<int>& scans, double ppm)
 {
   if (max_tag_count_ == 0) return;
 
@@ -619,7 +616,7 @@ void FLASHTaggerAlgorithm::runMatching(const String& fasta_file)
 
         auto uppercase_tag_seq = tag.getSequence().toUpper();
         std::vector<int> positions;
-        int tpos = 0;
+        Size tpos = 0;
         while (true)
         {
           std::cout << 9.1241 << std::endl;
@@ -629,7 +626,7 @@ void FLASHTaggerAlgorithm::runMatching(const String& fasta_file)
           tpos = sub_seq.find(uppercase_tag_seq, tpos);
           std::cout << 9.1242 << std::endl;
           if (tpos == std::string_view::npos) break;
-          positions.push_back(tpos + s);
+          positions.push_back((int)tpos + s);
           tpos++;
         }
 
@@ -640,7 +637,7 @@ void FLASHTaggerAlgorithm::runMatching(const String& fasta_file)
           {
             tpos = find_with_X_(sub_seq, uppercase_tag_seq, tpos);
             if (tpos == std::string_view::npos) break;
-            positions.push_back(tpos + s);
+            positions.push_back((int)tpos + s);
             tpos++;
           }
         }
@@ -797,7 +794,7 @@ const std::vector<FLASHDeconvHelperStructs::Tag>& FLASHTaggerAlgorithm::getTags(
 
 std::vector<int> FLASHTaggerAlgorithm::getMatchedPositions(const ProteinHit& hit, const FLASHDeconvHelperStructs::Tag& tag) const
 {
-  int pos = 0;
+  Size pos = 0;
   std::vector<int> indices;
   auto seq = hit.getSequence();
   auto tagseq = tag.getSequence().toUpper();
@@ -805,7 +802,7 @@ std::vector<int> FLASHTaggerAlgorithm::getMatchedPositions(const ProteinHit& hit
   {
     pos = find_with_X_(seq, tagseq, pos + 1);
     if (pos == String::npos) break;
-    indices.push_back(pos);
+    indices.push_back((int)pos);
   }
   return indices;
 }
