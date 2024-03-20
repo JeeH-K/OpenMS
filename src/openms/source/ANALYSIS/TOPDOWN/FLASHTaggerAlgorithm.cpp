@@ -646,8 +646,6 @@ void FLASHTaggerAlgorithm::runMatching(const String& fasta_file)
         std::cout << 9.195 << std::endl;
 
         if (isNterm) { s = start_loc[j]; }
-        std::cout << 9.196 << std::endl;
-
         else { s = std::max(0, int(fe.sequence.length()) - 1 - end_loc[j]); }
         std::cout << 9.197 << std::endl;
 
