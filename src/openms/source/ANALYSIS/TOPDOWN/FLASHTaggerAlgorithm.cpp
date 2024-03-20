@@ -581,7 +581,7 @@ void FLASHTaggerAlgorithm::runMatching(const String& fasta_file)
 
   // for each tag, find the possible start and end locations in the protein sequence. If C term, they are negative values to specify values are from
   // the end of the protein
-#pragma omp parallel for default(none) shared(end_loc, start_loc)
+// #pragma omp parallel for default(none) shared(end_loc, start_loc)
   for (int i = 0; i < tags_.size(); i++)
   {
     const auto& tag = tags_[i];
@@ -600,7 +600,7 @@ void FLASHTaggerAlgorithm::runMatching(const String& fasta_file)
 
   for (int n = 0; n < 2; n++)
   {
-#pragma omp parallel for default(none) shared(pairs, fasta_entry, start_loc, end_loc, decoy_mul, min_hit_tag_score, n)
+// #pragma omp parallel for default(none) shared(pairs, fasta_entry, start_loc, end_loc, decoy_mul, min_hit_tag_score, n)
     for (int i = 0; i < fasta_entry.size(); i++)
     {
       const auto& fe = fasta_entry[i];
@@ -609,7 +609,7 @@ void FLASHTaggerAlgorithm::runMatching(const String& fasta_file)
 
       if (is_decoy && n == 0)
       {
-#pragma omp critical
+// #pragma omp critical
         decoy_mul++;
         continue;
       }
@@ -691,7 +691,7 @@ void FLASHTaggerAlgorithm::runMatching(const String& fasta_file)
         }
         else
           continue;
-#pragma omp critical
+// #pragma omp critical
         if (! is_decoy) min_hit_tag_score = std::min(min_hit_tag_score, tag.getScore());
       }
       if (matched_tag_indices.empty()) continue;
@@ -713,7 +713,7 @@ void FLASHTaggerAlgorithm::runMatching(const String& fasta_file)
       hit.setMetaValue("IsDecoy", is_decoy ? 1 : 0);
       hit.setCoverage(double(match_cntr) / fe.sequence.length());
       hit.setScore(match_score);
-#pragma omp critical
+// #pragma omp critical
       {
         pairs.emplace_back(hit, matched_tag_indices);
       }
