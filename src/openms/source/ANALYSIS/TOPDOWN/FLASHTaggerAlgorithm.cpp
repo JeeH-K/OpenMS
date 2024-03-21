@@ -618,12 +618,12 @@ void FLASHTaggerAlgorithm::runMatching(const String& fasta_file)
         Size tpos = 0;
         while (true)
         {
-          std::cout << 9.1241 << std::endl;
+          std::cout << "Start" << std::endl;
           std::cout << sub_seq << std::endl;
           std::cout << uppercase_tag_seq << std::endl;
           std::cout << tpos << std::endl;
           tpos = sub_seq.find(uppercase_tag_seq, tpos);
-          std::cout << 9.1242 << std::endl;
+          std::cout << "Stop" << std::endl;
           if (tpos == std::string_view::npos) break;
           positions.push_back((int)tpos + s);
           tpos++;
