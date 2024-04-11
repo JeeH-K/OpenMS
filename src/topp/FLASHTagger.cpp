@@ -10,7 +10,6 @@
 #include <OpenMS/ANALYSIS/TOPDOWN/FLASHDeconvAlgorithm.h>
 #include <OpenMS/ANALYSIS/TOPDOWN/FLASHTaggerAlgorithm.h>
 #include <OpenMS/APPLICATIONS/TOPPBase.h>
-#include <OpenMS/CHEMISTRY/AASequence.h>
 #include <OpenMS/FORMAT/FASTAFile.h>
 #include <OpenMS/FORMAT/FLASHTaggerFile.h>
 #include <OpenMS/FORMAT/FileTypes.h>
@@ -23,14 +22,8 @@ using namespace std;
 //-------------------------------------------------------------
 // Doxygen docu
 //-------------------------------------------------------------
-/**
-@page
+// We do not want this class to show up in the docu:
 
-<B>The command line parameters of this tool are:</B>
-@verbinclude TOPPFLASHTagger.cli
-<B>INI file documentation of this tool:</B>
-@htmlinclude TOPPFLASHTagger.html
-*/
 class TOPPFLASHTagger : public TOPPBase
 {
 public:
@@ -183,8 +176,6 @@ protected:
         out_tagger_stream.close();
       }
     }
-
-
     return EXECUTION_OK;
   }
 };
