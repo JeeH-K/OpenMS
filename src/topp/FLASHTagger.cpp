@@ -153,26 +153,28 @@ protected:
     if ((int)tagger_param.getValue("max_tag_count") > 0)
     {
       OPENMS_LOG_INFO << "Finding sequence tags from deconvolved MS2 spectra ..." << endl;
-      tagger.setParameters(tagger_param);
-      tagger.run(deconvolved_spectra, tol); //
-      OPENMS_LOG_INFO << "Matching sequence tags against database ..." << endl;
-      tagger.runMatching(in_fasta);
-      OPENMS_LOG_INFO << "FLASHTagger run complete. Now writing the results in output files ..." << endl;
 
-      if (! out_protein_file.empty())
-      {
-        fstream out_tagger_stream = fstream(out_protein_file, fstream::out);
-        FLASHTaggerFile::writeProteinHeader(out_tagger_stream);
-        FLASHTaggerFile::writeProteins(tagger, out_tagger_stream);
-        out_tagger_stream.close();
-      }
+      FASTAFile fasta_file;
+      std::vector<FASTAFile::FASTAEntry> fasta_entry;
+      fasta_file.load(in_fasta, fasta_entry);
+
+      tagger.setParameters(tagger_param);
+      tagger.run(deconvolved_spectra, tol, fasta_entry);
+      OPENMS_LOG_INFO << "FLASHTagger run complete. Now writing the results in output files ..." << endl;
 
       if (! out_tag_file.empty())
       {
         fstream out_tagger_stream = fstream(out_tag_file, fstream::out);
         FLASHTaggerFile::writeTagHeader(out_tagger_stream);
         FLASHTaggerFile::writeTags(tagger, out_tagger_stream);
+        out_tagger_stream.close();
+      }
 
+      if (! out_protein_file.empty())
+      {
+        fstream out_tagger_stream = fstream(out_protein_file, fstream::out);
+        FLASHTaggerFile::writeProteinHeader(out_tagger_stream);
+        FLASHTaggerFile::writeProteins(tagger, out_tagger_stream);
         out_tagger_stream.close();
       }
     }

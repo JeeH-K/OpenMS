@@ -71,7 +71,7 @@ namespace OpenMS
     defaults_.setValue("merging_method", 0,
                        "Method for spectra merging before deconvolution. 0: No merging  1: Average gaussian method to perform moving gaussian "
                        "averaging of spectra per MS level. Effective to increase "
-                       "proteoform ID sensitivity (in particular for Q-TOF datasets). 2: Block method to perform merging of all spectra into a single "
+                       "proteoform ID sensitivity (in particular for Q-TOF datasets). For MSn, only the ones from the same precursor mass (subject to tolerance) are averaged. 2: Block method to perform merging of all spectra into a single "
                        "one per MS level (e.g., for NativeMS datasets).");
     defaults_.setMinInt("merging_method", 0);
     defaults_.setMaxInt("merging_method", 2);
@@ -406,6 +406,17 @@ namespace OpenMS
     if (precursor_map_for_ida_.empty()) return;
 
     int scan_number = getScanNumber(map, index);
+    auto filter_str = map[index].getMetaValue("filter string").toString();
+    Size pos = filter_str.find("cv=");
+    double cv = 1e5;
+
+    if (pos != String::npos)
+    {
+      Size end = filter_str.find(" ", pos);
+      if (end == String::npos) end = filter_str.length() - 1;
+      cv = std::stod(filter_str.substr(pos + 3, end - pos));
+    }
+
     auto iter = precursor_map_for_ida_.lower_bound(scan_number);
 
     while (iter != precursor_map_for_ida_.begin()
@@ -434,7 +445,7 @@ namespace OpenMS
             precursor_log_mz_peak.mass = smap[0];
             precursor_log_mz_peak.intensity = smap[6];
 
-            PeakGroup precursor_pg;
+            PeakGroup precursor_pg(precursor_log_mz_peak.abs_charge, precursor_log_mz_peak.abs_charge, true);
             precursor_pg.push_back(precursor_log_mz_peak);
             precursor_pg.setAbsChargeRange(std::abs((int)smap[7]), std::abs((int)smap[8]));
             precursor_pg.setChargeIsotopeCosine(precursor_log_mz_peak.abs_charge, smap[9]);
@@ -446,7 +457,22 @@ namespace OpenMS
             precursor_pg.setQscore(smap[2]);
             precursor_pg.setRepAbsCharge(precursor_log_mz_peak.abs_charge);
             precursor_pg.updateMonoMassAndIsotopeIntensities();
-            precursor_pg.setScanNumber(scan_number);
+            int ms1_scan_number = iter->first;
+            Size index_copy (index);
+            while(index_copy != 0 && getScanNumber(map, index_copy--) != ms1_scan_number);
+
+            auto filter_str2 = map[index_copy].getMetaValue("filter string").toString(); // this part is messy. Make a function to parse CV from map
+            Size pos2 = filter_str2.find("cv=");
+            double cv_match = 1e5;
+
+            if (pos2 != String::npos)
+            {
+              Size end2 = filter_str2.find(" ", pos2);
+              if (end2 == String::npos) end2 = filter_str2.length() - 1;
+              cv_match = std::stod(filter_str2.substr(pos2 + 3, end2 - pos2));
+            }
+            if (std::abs(cv_match - cv) > 1e-5) continue;
+
             native_id_precursor_peak_group_map_[map[index].getNativeID()] = precursor_pg;
             break;
           }
@@ -462,11 +488,23 @@ namespace OpenMS
   {
     for (Size index = 0; index < map.size(); index++)
     {
-      auto spec = map[index];
+      auto spec = map[index]; // MS2 index
       if (spec.getMSLevel() != ms_level) { continue; }
 
       int scan_number = getScanNumber(map, index);
       String native_id = spec.getNativeID();
+
+      auto filter_str = spec.getMetaValue("filter string").toString();
+      Size pos = filter_str.find("cv=");
+      double cv = 1e5;
+
+      if (pos != String::npos)
+      {
+        Size end = filter_str.find(" ", pos);
+        if (end == String::npos) end = filter_str.length() - 1;
+        cv = std::stod(filter_str.substr(pos + 3, end - pos));
+      }
+
       // find all candidate scan numbers from ms_level - 1
       int num_preceding = ms_level == 2 ? preceding_MS1_count_ : 1;
       auto index_copy = index;
@@ -475,6 +513,7 @@ namespace OpenMS
         index_copy--;
         if (map[index_copy].getMSLevel() == ms_level - 1) { num_preceding--; }
       }
+
       int b_scan_number = getScanNumber(map, index_copy);
 
       // then find deconvolved spectra within the scan numbers.
@@ -484,13 +523,12 @@ namespace OpenMS
 
       std::vector<DeconvolvedSpectrum> survey_scans;
 
-      // exclude decoy ones.
+      // exclude decoy ones and cv mismatches
       while (diter < deconvolved_spectra.end() && diter->getScanNumber() < scan_number)
       {
-        if (diter->getOriginalSpectrum().getMSLevel() == ms_level - 1 && ! diter->isDecoy()) { survey_scans.push_back(*diter); }
+        if ((diter->getOriginalSpectrum().getMSLevel() == ms_level - 1) && (! diter->isDecoy()) && (std::abs(diter->getCV() - cv) < 1e-5)) { survey_scans.push_back(*diter); }
         diter++;
       }
-
       // register the best precursor, starting from the most recent one. Out of the masses in a single scan, use the max SNR one.
 
       double start_mz = 0;

@@ -5,7 +5,7 @@
 // $Maintainer: Kyowon Jeong, Jihyung Kim $
 // $Authors: Kyowon Jeong, Jihyung Kim $
 // --------------------------------------------------------------------------
-// #define TRAIN_OUT
+//#define TRAIN_OUT
 //#define USE_TAGGER
 #include <OpenMS/ANALYSIS/TOPDOWN/DeconvolvedSpectrum.h>
 #include <OpenMS/ANALYSIS/TOPDOWN/FLASHDeconvAlgorithm.h>
@@ -328,7 +328,39 @@ protected:
         msNscan_to_precursor_pg[deconvolved_spectrum.getScanNumber()] = deconvolved_spectrum.getPrecursorPeakGroup();
       }
     }
+/*
+    for (auto& deconvolved_spectrum : deconvolved_spectra)
+    {
+      uint ms_level = deconvolved_spectrum.getOriginalSpectrum().getMSLevel();
+      if (ms_level != 1) continue;
 
+      const int max_count = 10;
+      double threshold = 0;
+      double mass = 0;
+      double intensity_sum = 0;
+
+      if (deconvolved_spectrum.size() > max_count)
+      {
+        std::vector<float> intensites;
+        intensites.reserve(deconvolved_spectrum.size());
+        for (const auto& pg : deconvolved_spectrum)
+        {
+          intensites.push_back(pg.getIntensity());
+        }
+        std::sort(intensites.rbegin(), intensites.rend());
+        threshold = intensites[max_count];
+      }
+
+      for (const auto& pg : deconvolved_spectrum)
+      {
+        if (pg.getIntensity() < threshold) continue;
+        mass += pg.getMonoMass() * pg.getIntensity();
+        intensity_sum += pg.getIntensity();
+      }
+      if (intensity_sum <= 0)  std::cout<< deconvolved_spectrum.getOriginalSpectrum().getRT()<<" " <<  0 << "\n";
+      std::cout << deconvolved_spectrum.getOriginalSpectrum().getRT()<< " " <<  mass / intensity_sum << "\n";
+    }
+*/
     for (auto& val : per_ms_level_deconv_spec_count)
     {
       OPENMS_LOG_INFO << "So far, FLASHDeconv found " << per_ms_level_mass_count[val.first] << " masses in " << val.second << " MS" << val.first << " spectra out of "
@@ -346,8 +378,6 @@ protected:
     auto tagger_param = getParam_().copy("tagger:", true);
     if ((int)tagger_param.getValue("max_tag_count") > 0 && !deconvolved_spectra.empty() && tols.size() > 1)
     {
-      OPENMS_LOG_INFO << "Finding sequence tags from deconvolved MS2 spectra ..." << endl;
-
       String fastaname = tagger_param.getValue("fasta").toString();
       String out_tag = tagger_param.getValue("out_tag").toString();
       String out_protein_tag = tagger_param.getValue("out_protein").toString();
@@ -357,9 +387,11 @@ protected:
       tagger_param.remove("fasta");
       tagger.setParameters(tagger_param);
 
-      tagger.run(deconvolved_spectra, tols[1]);
-      tagger.runMatching(fastaname);
+      FASTAFile fasta_file;
+      std::vector<FASTAFile::FASTAEntry> fasta_entry;
+      fasta_file.load(fastaname, fasta_entry);
 
+      tagger.run(deconvolved_spectra, tols[1], fasta_entry);
       if (!out_protein_tag.empty())
       {
         fstream out_tagger_stream = fstream(out_protein_tag, fstream::out);
@@ -373,7 +405,6 @@ protected:
         fstream out_tagger_stream = fstream(out_tag, fstream::out);
         FLASHTaggerFile::writeTagHeader(out_tagger_stream);
         FLASHTaggerFile::writeTags(tagger, out_tagger_stream);
-
         out_tagger_stream.close();
       }
     }
