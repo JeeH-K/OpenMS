@@ -1,7 +1,7 @@
 # This does the whole cmake build of OpenMS on github's runners. It is intended to replace our current Jenkins based jobs.
 # For Nightly and Release branches it builds the packages and submits them to our archive. 
 # NB: The actual upload is currently commented out so that this can get merged to develop. It will be re-added presently.
-name: openms-ci-full
+name: build-dlls
 
 # Controls when the action will run. Triggers the workflow on push or pull request
 # events or manually via workflow_dispatch
